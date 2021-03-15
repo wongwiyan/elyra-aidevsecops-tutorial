@@ -1,0 +1,8 @@
+boto3
+flask-cors
+gunicorn
+matplotlib
+pandas
+prometheus-client
+prometheus-flask-exporter
+tensorflow
