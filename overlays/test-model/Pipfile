@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 requests = "*"
 numpy = "*"
-tensorflow = "*"
 
 [dev-packages]
 

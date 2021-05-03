@@ -18,39 +18,34 @@
 
 """Test model and gather metrics."""
 
+import pickle
 import logging
 import requests
 import json
 import os
-import sys
-
-from tensorflow.keras.datasets import mnist as tf_dataset
+from pathlib import Path
 
 import numpy as np
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def download_test_dataset():
-    """Download test dataset to run script."""
-    # Prepare MNIST data.
-    _, (x_test, y_test) = tf_dataset.load_data()
-
-    dataset = {
-        "x_test": x_test,
-        "y_test": y_test,
-    }
-
-    return dataset
-
-
 def main_test():
     """Run main test to gather metrics for data scientists and AI DevOps Engineers."""
-    dataset = download_test_dataset()
+    dataset = ["xtestdata.pkl", "ytestdata.pkl"]
 
-    x_test = dataset["x_test"]
+    directory_path = Path.cwd().parents[1]
 
-    y_test = dataset["y_test"]
+    dataset_path = directory_path.joinpath(
+        str(os.environ.get("DATASET_PATH", "data/raw/mnist_datasets_tf"))
+    )
+
+    # Retrieve test dataset.
+    with open(dataset_path.joinpath(dataset[0]), "rb") as pklxtest_file:
+        x_test = pickle.load(pklxtest_file)
+
+    with open(dataset_path.joinpath(dataset[1]), "rb") as pklytest_file:
+        y_test = pickle.load(pklytest_file)
 
     # Convert to float32.
     x_test = np.array(x_test, np.float32)
@@ -101,7 +96,19 @@ def main_test():
         "average_error": np.mean([r["error"] for r in results]),
     }
 
-    json.dump(report, sys.stdout, indent=2)
+    _LOGGER.info(f"Result from script is: \n {report}")
+
+    output = json.dumps(report, sort_keys=True, indent=2)
+
+    output_fp = os.environ.get("SCRIPT_OUTPUT_PATH")
+
+    if output_fp:
+        dir_name = os.path.dirname(output_fp)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
+
+        with open(output_fp, "w") as output_file:
+            output_file.write(output)
 
 
 if __name__ == "__main__":
