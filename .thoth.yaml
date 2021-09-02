@@ -48,10 +48,7 @@ managers:
   - name: version
     configuration:
       maintainers:
-        - pacospace
-        - sesheta
-        - goern
-        - fridex
+        - wongwiyan
       assignees:
         - sesheta
       labels: [bot]
